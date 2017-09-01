@@ -10,6 +10,7 @@ from django.shortcuts import render, render_to_response
 # Create your views here.
 from .models import User, Article
 from datetime import datetime
+from django.http import Http404
 
 
 class UserForm(forms.Form):
@@ -37,11 +38,12 @@ def register(request):
         return render_to_response('register.html', {'form': UserForm()})
 
 
-def detail(request, num):
-    post = Article.objects.all()[int(num)]
-    Str = "title=%s, category=%s, date_time=%s, content=%s" % (post.title, post.category, post.date_time, post.content)
-
-    return HttpResponse(Str)
+def detail(request, id):
+    try:
+        post = Article.objects.get(id=str(id))
+    except Article.DoesNotExist:
+        raise Http404
+    return render(request, 'post.html', {'post': post})
 
 
 def test(request):
